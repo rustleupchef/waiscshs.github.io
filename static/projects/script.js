@@ -3,6 +3,9 @@ const regularHeight = 995;
 let currentWidth;
 let currentHeight;
 
+let _projects = [];
+let counter = 0;
+
 function clamp(num, min, max) {
     return Math.min(Math.max(num, min), max);
 }
@@ -14,6 +17,41 @@ function loadSizes() {
     content.style.height = clamp(currentHeight * 0.625, 0, window.innerHeight) + "px";
     content.style.top = ((window.innerHeight - document.getElementById("top-bar").offsetHeight) - parseInt(content.style.height))/2 + document.getElementById("top-bar").offsetHeight + "px";
     content.style.left = (window.innerWidth - parseInt(content.style.width))/2 + "px";
+}
+
+function projects() {
+    fetch("keys.json")
+        .then(response => response.json())
+        .then(data => {
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${data.sheet_id}/values/Projects!A:E?key=${data.key}`;
+            fetch(url)
+                .then(res => res.json())
+                .then(cells => {
+                    let rows = cells.values.splice(1);
+                    console.log(rows);
+                    _projects = rows;
+                    if (_projects.length > 0) {
+                        document.querySelector(".content div").innerHTML = `<h1>${rows[0][1]}</h1><br>${rows[0][2]}<br>${rows[0][4]}`;
+                        document.querySelector(".content img").src = rows[0][3] || "images/Frame 31.png";
+                        document.querySelector(".content p").innerHTML = `${counter + 1}/${rows.length}`;
+                    }
+                })
+                .catch(err => console.error(err));
+        })
+        .catch(error => {
+            console.error(error);
+        });
+}
+
+function changeCounter() {
+    counter += 1;
+    counter %= _projects.length;
+
+    const point = _projects[counter]
+
+    document.querySelector(".content div").innerHTML = `<h1>${point[1]}</h1><br>${point[2]}<br>${point[4]}`;
+    document.querySelector(".content img").src = point[3] || "images/Frame 31.png";
+    document.querySelector(".content p").innerHTML = `${counter + 1}/${_projects.length}`;
 }
 
 window.onload = function() {
@@ -43,5 +81,8 @@ window.onload = function() {
 
     setTimeout(loadSizes, 100);
     const textBox = document.querySelector(".content div");
+    document.querySelector(".content").addEventListener('click', changeCounter);
     textBox.innerHTML = "<h1>Projects</h1><br>Projects are soon to come!";
+
+    projects();
 }

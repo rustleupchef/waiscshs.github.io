@@ -16,6 +16,30 @@ function loadSizes() {
     content.style.left = (window.innerWidth - parseInt(content.style.width))/2 + "px";
 }
 
+function contact() {
+    fetch("keys.json")
+        .then(response => response.json())
+        .then(data => {
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${data.sheet_id}/values/Contact!A:B?key=${data.key}`;
+            fetch(url)
+                .then(res => res.json())
+                .then(cells => {
+                    const textBox = document.querySelector(".content div");
+                    let text = "<h1>Contact Info</h1>";
+                    let rows = cells.values.splice(1);
+
+                    for (let row of rows) {
+                        text += `<br>${row[0]}:<br>${row[1]}<br><br>`
+                    }
+                    textBox.innerHTML = text;
+                })
+                .catch(err => console.error(err));
+        })
+        .catch(error => {
+            console.error(error);
+        });
+}
+
 window.onload = function() {
 
     currentWidth = window.innerWidth;
@@ -42,6 +66,5 @@ window.onload = function() {
     });
 
     setTimeout(loadSizes, 100);
-    const textBox = document.querySelector(".content div");
-    textBox.innerHTML = "<h1>Contact Info</h1><br>Mr. Wegscheid:<br>shaun.wegscheid@springbranchisd.com<br><br>Mrs. Wegscheid:<br>Cherly.Wegscheid@springbranchisd.com<br><br>Henson Liga:<br>ligahen000@mysbisd.org";
+    contact();
 }
