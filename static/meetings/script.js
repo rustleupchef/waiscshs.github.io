@@ -26,7 +26,7 @@ function loadSizes() {
 }
 
 function schedule() {
-     fetch("keys.json")
+     fetch("/etc/secrets/keys.json")
         .then(response => response.json())
         .then(data => {
             const url = `https://sheets.googleapis.com/v4/spreadsheets/${data.sheet_id}/values/Schedule!A1?key=${data.key}`;
