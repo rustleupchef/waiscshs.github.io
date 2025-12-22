@@ -17,7 +17,7 @@ function loadSizes() {
 }
 
 function members() {
-    fetch("/etc/secrets/keys.json")
+    fetch("keys.json")
         .then(response => response.json())
         .then(data => {
             const url = `https://sheets.googleapis.com/v4/spreadsheets/${data.sheet_id}/values/Members!A:D?key=${data.key}`;
