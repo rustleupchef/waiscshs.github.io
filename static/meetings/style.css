@@ -39,7 +39,7 @@ canvas {
 
 .content img {
     display: flex;
-    max-width: 40%;
+    max-width: 35%;
     height: auto;
     float: right;
     margin: 32px;

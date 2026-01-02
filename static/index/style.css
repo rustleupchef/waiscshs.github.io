@@ -34,6 +34,7 @@ canvas {
 
 .container img {
     display: block;
+    max-width: 50%;
 }
 
 .container h1, h2, h3, h4 {
@@ -46,7 +47,8 @@ canvas {
 }
 
 #gas {
-    position: absolute;
+    z-index: -2;
+    position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
