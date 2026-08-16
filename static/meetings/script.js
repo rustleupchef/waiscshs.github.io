@@ -7,6 +7,14 @@ function getNextMeeting(refDate, today) {
     const msPerDay = 24 * 60 * 60 * 1000;
     const daysInBetween = 14;
     const daysSinceRef = Math.floor((today - refDate) / msPerDay);
+
+    if (daysSinceRef < 0) {
+        const knownNextMeeting = refDate;
+        knownNextMeeting.setDate(refDate.getDate() + 1);
+        knownNextMeeting.setHours(0, 0, 0, 0);
+        return knownNextMeeting;
+    }
+
     const daysUntilNext = daysInBetween - (daysSinceRef % daysInBetween);
     const nextMeeting = new Date(today.getTime() + (daysUntilNext * msPerDay));
     return nextMeeting;
@@ -34,6 +42,7 @@ function schedule() {
             console.log(cells.values[0][0]);
             const firstMeeting = new Date(cells.values[0][0]);
             const nextMeetingDate = getNextMeeting(firstMeeting, today);
+            console.log(nextMeetingDate.toLocaleDateString());
             const daysUntilMeeting = Math.ceil((nextMeetingDate - today) / (1000 * 60 * 60 * 24));
 
             const textBox = document.querySelector(".content div");
