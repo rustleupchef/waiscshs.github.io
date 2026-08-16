@@ -7,6 +7,7 @@ function getNextMeeting(refDate, today) {
     const msPerDay = 24 * 60 * 60 * 1000;
     const daysInBetween = 14;
     const daysSinceRef = Math.floor((today - refDate) / msPerDay);
+    console.log("daysSinceRef", daysSinceRef);
 
     if (daysSinceRef < 0) {
         const knownNextMeeting = refDate;
@@ -18,6 +19,14 @@ function getNextMeeting(refDate, today) {
     const daysUntilNext = daysInBetween - (daysSinceRef % daysInBetween);
     const nextMeeting = new Date(today.getTime() + (daysUntilNext * msPerDay));
     return nextMeeting;
+}
+
+function isInTime() {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const totalMinutes = hours * 60 + minutes;
+    return totalMinutes < 990;
 }
 
 function clamp(num, min, max) {
@@ -39,14 +48,21 @@ function schedule() {
         .then(res => res.json())
         .then(cells => {
             const today = new Date(new Date().toDateString());
-            console.log(cells.values[0][0]);
             const firstMeeting = new Date(cells.values[0][0]);
             const nextMeetingDate = getNextMeeting(firstMeeting, today);
-            console.log(nextMeetingDate.toLocaleDateString());
             const daysUntilMeeting = Math.ceil((nextMeetingDate - today) / (1000 * 60 * 60 * 24));
 
+            const isActiveMeeting = daysUntilMeeting == 14 && Math.floor((today - firstMeeting) / (24 * 60 * 60 * 1000)) >= 0;
+            const inTimePeriod = isInTime(today);
+            const activeText = isActiveMeeting && inTimePeriod ? "We have a meeting today!!!<br><br>" : ""; 
+
             const textBox = document.querySelector(".content div");
-            textBox.innerHTML = `<h1>Meeting Schedule</h1>Our next meeting is on ${nextMeetingDate.toLocaleDateString()}<br><br>${daysUntilMeeting} day(s) till the next meeting<br><br>We meet in room A125 from 3:30 - 4:30`;
+            textBox.innerHTML = 
+                `<h1>Meeting Schedule</h1>` +
+                activeText + 
+                `Our next meeting is on ${nextMeetingDate.toLocaleDateString()}<br>` +
+                `<br>${daysUntilMeeting} day(s) till the next meeting<br>` + 
+                `<br>We meet in room A125 from 3:30 - 4:30`;
             const loading = document.querySelector(".loading");
             loading.style.animation = "fadeOut 2s ease-out";
             loading.addEventListener("animationend", function() {
